@@ -527,6 +527,7 @@ class Modern:
             inp =  input("Enter your choice (1,2,3): ")
             print("\n")
             if inp == "1":
+                print("The cipher text after encryption is ")
                 return self.main_input_des()
             if inp == "2":
                 return self.three_des()
@@ -619,57 +620,40 @@ class Modern:
         inp =  input("Enter your choice (1,2,3): ")
         print("\n")
             #3---------------------------X-------------------------------------  DES MODE
-           
-        if algo == "DES":
-             # ECB MODE
-            if inp == "1":
-                string_list = aes_func.divide_chunks(word,chunks)
-                checked_string_list = self.check_char_miss_char(string_list)
-                key = self.getkey_des()
-                cipher_list = []
-                for i in range(len(checked_string_list)):
-                    cipher_list.append(self.des_encryption(checked_string_list[i],key))
-                cipher = list(itertools.chain.from_iterable(cipher_list))
-                cipher= ''.join(cipher)
-                return cipher
-                # CBC mode
-            if inp == "2":
-                # divide into char blocks
-                string_list = aes_func.divide_chunks(word,chunks)
-                # check last element is 8 bytes
-                checked_string_list = self.check_char_miss_char(string_list)
-                # get key
-                key = self.getkey_des()
-                cipher_list = []
-                # create the IV value 
-                iv_gen =self.generate_random_n_bit_list(32)
-                # take the first element of the plaintext blocks and get each 8-bit values
-                init_round = func.words_to_bits(checked_string_list[0])
-                # combine them to form 64-bit
-                init_round_list = list(itertools.chain.from_iterable(init_round))
-                # xor as given in logic
-                iv_applied_element = aes_func.xor_lists(init_round_list,iv_gen )
-                # divide the chunks
-                new_char_list = aes_func.divide_chunks(iv_applied_element,8)
-                # creates the first cipher block
-                first_char = ""
-                for j in range(len(new_char_list)):
-                    first_char += aes_func.binary_list_to_char(new_char_list[j])
-                # perform the encryption
-                first_cipher_element = self.des_encryption(first_char,key)
-                # add it to the cipher list
-                cipher_list.append(first_cipher_element)
-                for k in range(1,len(checked_string_list)):
-                    main_round = func.words_to_bits(checked_string_list[k])
-                     # combine them to form 64-bit
-                    main_round_list = list(itertools.chain.from_iterable(main_round))
-                    previous_round = func.words_to_bits(cipher_list[-1])
-                     # combine them to form 64-bit
-                    previous_round_list = list(itertools.chain.from_iterable(previous_round))
+
+        while True:   
+            if algo == "DES":
+                # ECB MODE
+                if inp == "1":
+                    string_list = aes_func.divide_chunks(word,chunks)
+                    checked_string_list = self.check_char_miss_char(string_list)
+                    key = self.getkey_des()
+                    cipher_list = []
+                    for i in range(len(checked_string_list)):
+                        cipher_list.append(self.des_encryption(checked_string_list[i],key))
+                    cipher = list(itertools.chain.from_iterable(cipher_list))
+                    cipher= ''.join(cipher)
+                    return cipher
+                    # CBC mode
+                if inp == "2":
+                    # divide into char blocks
+                    string_list = aes_func.divide_chunks(word,chunks)
+                    # check last element is 8 bytes
+                    checked_string_list = self.check_char_miss_char(string_list)
+                    # get key
+                    key = self.getkey_des()
+                    cipher_list = []
+                    # create the IV value 
+                    iv_gen =self.generate_random_n_bit_list(32)
+                    # take the first element of the plaintext blocks and get each 8-bit values
+                    init_round = func.words_to_bits(checked_string_list[0])
+                    # combine them to form 64-bit
+                    init_round_list = list(itertools.chain.from_iterable(init_round))
                     # xor as given in logic
-                    xor_applied_element = aes_func.xor_lists(main_round_list,previous_round_list)
-                    new_char_list = aes_func.divide_chunks(xor_applied_element,8)
-                    # creates the cipher block
+                    iv_applied_element = aes_func.xor_lists(init_round_list,iv_gen )
+                    # divide the chunks
+                    new_char_list = aes_func.divide_chunks(iv_applied_element,8)
+                    # creates the first cipher block
                     first_char = ""
                     for j in range(len(new_char_list)):
                         first_char += aes_func.binary_list_to_char(new_char_list[j])
@@ -677,136 +661,190 @@ class Modern:
                     first_cipher_element = self.des_encryption(first_char,key)
                     # add it to the cipher list
                     cipher_list.append(first_cipher_element)
-                
-                # combine blocks together
-                cipher = ''.join(cipher_list)
-                return cipher      
-                # CTRL mode
-            if inp == "3":
-                # divide into char blocks
-                string_list = aes_func.divide_chunks(word,chunks)
-                # check last element is 8 bytes
-                checked_string_list = self.check_char_miss_char(string_list)
-                # get key
-                key = self.getkey_des()
-                cipher_list = []
-                # create the IV value 
-                iv_gen =self.generate_random_n_bit_list(32)
-                # create a counter
-                counter = Counter(32)
-                for i in range(len(checked_string_list)):
-                    new_counter = []
-                    if i == 0:
-                        new_counter.append(iv_gen.extend(counter.counter))
-                    else:
-                        new_counter.append(iv_gen.extend(counter.increment()))
+                    for k in range(1,len(checked_string_list)):
+                        main_round = func.words_to_bits(checked_string_list[k])
+                        # combine them to form 64-bit
+                        main_round_list = list(itertools.chain.from_iterable(main_round))
+                        previous_round = func.words_to_bits(cipher_list[-1])
+                        # combine them to form 64-bit
+                        previous_round_list = list(itertools.chain.from_iterable(previous_round))
+                        # xor as given in logic
+                        xor_applied_element = aes_func.xor_lists(main_round_list,previous_round_list)
+                        new_char_list = aes_func.divide_chunks(xor_applied_element,8)
+                        # creates the cipher block
+                        first_char = ""
+                        for j in range(len(new_char_list)):
+                            first_char += aes_func.binary_list_to_char(new_char_list[j])
+                        # perform the encryption
+                        first_cipher_element = self.des_encryption(first_char,key)
+                        # add it to the cipher list
+                        cipher_list.append(first_cipher_element)
+                    
+                    # combine blocks together
+                    cipher = ''.join(cipher_list)
+                    return cipher      
+                    # CTRL mode
+                if inp == "3":
+                    # divide into char blocks
+                    string_list = aes_func.divide_chunks(word,chunks)
+                    # check last element is 8 bytes
+                    checked_string_list = self.check_char_miss_char(string_list)
+                    # get key
+                    key = self.getkey_des()
+                    cipher_list = []
+                    # create the IV value 
+                    iv_gen =self.generate_random_n_bit_list(32)
+                    # create a counter
+                    counter = Counter(32)
+                    for i in range(len(checked_string_list)):
+                        new_counter = []
+                        if i == 0:
+                            new_counter.append(iv_gen.extend(counter.counter))
+                        else:
+                            new_counter.append(iv_gen.extend(counter.increment()))
+                        # divide the chunks
+                        new_char_list = aes_func.divide_chunks(new_counter,8)
+                        # creates the first cipher block
+                        first_char = ""
+                        for j in range(len(new_char_list)):
+                            first_char += aes_func.binary_list_to_char(new_char_list[j])
+                        # run through encryption
+                        ctr_encrypt = self.des_encryption(first_char, key)
+                        # create the bit list
+                        ctr_encrypt_list = func.words_to_bits(ctr_encrypt)
+                        # join to create 64 bits
+                        ctr_encrypt_bit_list = list(itertools.chain.from_iterable(ctr_encrypt_list))
+                        # create the plain block list
+                        ctr_plain_list = func.words_to_bits(checked_string_list[i])
+                        # join to create 64 bits
+                        ctr_plain_bloc_list = list(itertools.chain.from_iterable(ctr_plain_list))
+                        # xor as given in logic
+                        xor_applied_element = aes_func.xor_lists(ctr_encrypt_bit_list,ctr_plain_bloc_list)
+                        new_char_list = aes_func.divide_chunks(xor_applied_element,8)
+                        # creates the xor block
+                        first_block = ""
+                        for j in range(len(new_char_list)):
+                            first_block += aes_func.binary_list_to_char(new_char_list[j])
+                        # add it to the cipher list
+                        cipher_list.append(first_block)
+
+                    # combine blocks together
+                    cipher = ''.join(cipher_list)
+                    return cipher  
+    #x----------------------------------------X-------------------------------- AES LOGIC MODE
+                else:
+                    print("Invalid Input \n")
+                    x = input("Enter only either these choices (1,2,3): ")
+                    print("\n")
+            else:
+                # ECB mode
+                if inp == "1":
+                    string_list = aes_func.divide_chunks(word,chunks)
+                    checked_string_list = self.check_char_miss_char(string_list)
+                    key,key_length1 = self.getkey_aes()
+                    cipher_list = []
+                    for i in range(len(checked_string_list)):
+                        cipher_list.append(self.aes_encryption(checked_string_list[i],key,key_length1))
+                    cipher = list(itertools.chain.from_iterable(cipher_list))
+                    cipher= ''.join(cipher)
+                    return cipher
+                    # CBC mode
+                if inp == "2":
+                    string_list = aes_func.divide_chunks(word,chunks)
+                    checked_string_list = self.check_char_miss_char(string_list)
+                    key,key_length1 = self.getkey_aes()
+                    cipher_list = []
+                    #------------------x--------------------
+                    # create the IV value 
+                    iv_gen =self.generate_random_n_bit_list(64)
+                    # take the first element of the plaintext blocks and get each 8-bit values
+                    init_round = func.words_to_bits(checked_string_list[0])
+                    # combine them to form 64-bit
+                    init_round_list = list(itertools.chain.from_iterable(init_round))
+                    # xor as given in logic
+                    iv_applied_element = aes_func.xor_lists(init_round_list,iv_gen )
                     # divide the chunks
-                    new_char_list = aes_func.divide_chunks(new_counter,8)
+                    new_char_list = aes_func.divide_chunks(iv_applied_element,8)
                     # creates the first cipher block
                     first_char = ""
                     for j in range(len(new_char_list)):
                         first_char += aes_func.binary_list_to_char(new_char_list[j])
-                    # run through encryption
-                    ctr_encrypt = self.des_encryption(first_char, key)
-                    # create the bit list
-                    ctr_encrypt_list = func.words_to_bits(ctr_encrypt)
-                    # join to create 64 bits
-                    ctr_encrypt_bit_list = list(itertools.chain.from_iterable(ctr_encrypt_list))
-                    # create the plain block list
-                    ctr_plain_list = func.words_to_bits(checked_string_list[i])
-                    # join to create 64 bits
-                    ctr_plain_bloc_list = list(itertools.chain.from_iterable(ctr_plain_list))
-                    # xor as given in logic
-                    xor_applied_element = aes_func.xor_lists(ctr_encrypt_bit_list,ctr_plain_bloc_list)
-                    new_char_list = aes_func.divide_chunks(xor_applied_element,8)
-                    # creates the xor block
-                    first_block = ""
-                    for j in range(len(new_char_list)):
-                        first_block += aes_func.binary_list_to_char(new_char_list[j])
-                    # add it to the cipher list
-                    cipher_list.append(first_block)
-
-                # combine blocks together
-                cipher = ''.join(cipher_list)
-                return cipher  
-#x----------------------------------------X-------------------------------- AES LOGIC MODE
-            else:
-                print("Invalid Input \n")
-                x = input("Enter only either these choices (1,2,3): ")
-                print("\n")
-        else:
-            # ECB mode
-            if inp == "1":
-                string_list = aes_func.divide_chunks(word,chunks)
-                checked_string_list = self.check_char_miss_char(string_list)
-                key,key_length1 = self.getkey_aes()
-                cipher_list = []
-                for i in range(len(checked_string_list)):
-                    cipher_list.append(self.aes_encryption(checked_string_list[i],key,key_length1))
-                cipher = list(itertools.chain.from_iterable(cipher_list))
-                cipher= ''.join(cipher)
-                return cipher
-                # CBC mode
-            if inp == "2":
-                string_list = aes_func.divide_chunks(word,chunks)
-                checked_string_list = self.check_char_miss_char(string_list)
-                key,key_length1 = self.getkey_aes()
-                cipher_list = []
-                #------------------x--------------------
-                # create the IV value 
-                iv_gen =self.generate_random_n_bit_list(64)
-                # take the first element of the plaintext blocks and get each 8-bit values
-                init_round = func.words_to_bits(checked_string_list[0])
-                # combine them to form 64-bit
-                init_round_list = list(itertools.chain.from_iterable(init_round))
-                # xor as given in logic
-                iv_applied_element = aes_func.xor_lists(init_round_list,iv_gen )
-                # divide the chunks
-                new_char_list = aes_func.divide_chunks(iv_applied_element,8)
-                # creates the first cipher block
-                first_char = ""
-                for j in range(len(new_char_list)):
-                    first_char += aes_func.binary_list_to_char(new_char_list[j])
-                # perform the encryption------------------------- aes
-                first_cipher_element = self.aes_encryption(first_char,key, key_length1)
-                # add it to the cipher list
-                cipher_list.append(first_cipher_element)
-                for k in range(1,len(checked_string_list)):
-                    main_round = func.words_to_bits(checked_string_list[k])
-                     # combine them to form 64-bit
-                    main_round_list = list(itertools.chain.from_iterable(main_round))
-                    previous_round = func.words_to_bits(cipher_list[-1])
-                     # combine them to form 64-bit
-                    previous_round_list = list(itertools.chain.from_iterable(previous_round))
-                    # xor as given in logic
-                    xor_applied_element = aes_func.xor_lists(main_round_list,previous_round_list)
-                    new_char_list = aes_func.divide_chunks(xor_applied_element,8)
-                    # creates the cipher block
-                    first_char = ""
-                    for j in range(len(new_char_list)):
-                        first_char += aes_func.binary_list_to_char(new_char_list[j])
-                    # perform the encryption
-                    first_cipher_element = self.aes_encryption(first_char,key,key_length1)
+                    # perform the encryption------------------------- aes
+                    first_cipher_element = self.aes_encryption(first_char,key, key_length1)
                     # add it to the cipher list
                     cipher_list.append(first_cipher_element)
-                
-                # combine blocks together
-                cipher = ''.join(cipher_list)
-                return cipher 
-                
-                # CTRL mode
-            if inp == "3":
-                string_list = aes_func.divide_chunks(word,chunks)
-                checked_string_list = self.check_char_miss_char(string_list)
-                key,key_length1 = self.getkey_aes()
-                cipher_list = []
-                #------------------x--------------------
+                    for k in range(1,len(checked_string_list)):
+                        main_round = func.words_to_bits(checked_string_list[k])
+                        # combine them to form 64-bit
+                        main_round_list = list(itertools.chain.from_iterable(main_round))
+                        previous_round = func.words_to_bits(cipher_list[-1])
+                        # combine them to form 64-bit
+                        previous_round_list = list(itertools.chain.from_iterable(previous_round))
+                        # xor as given in logic
+                        xor_applied_element = aes_func.xor_lists(main_round_list,previous_round_list)
+                        new_char_list = aes_func.divide_chunks(xor_applied_element,8)
+                        # creates the cipher block
+                        first_char = ""
+                        for j in range(len(new_char_list)):
+                            first_char += aes_func.binary_list_to_char(new_char_list[j])
+                        # perform the encryption
+                        first_cipher_element = self.aes_encryption(first_char,key,key_length1)
+                        # add it to the cipher list
+                        cipher_list.append(first_cipher_element)
+                    
+                    # combine blocks together
+                    cipher = ''.join(cipher_list)
+                    return cipher 
+                    
+                    # CTRL mode
+                if inp == "3":
+                    string_list = aes_func.divide_chunks(word,chunks)
+                    checked_string_list = self.check_char_miss_char(string_list)
+                    key,key_length1 = self.getkey_aes()
+                    cipher_list = []
+                    #------------------x--------------------
+                    iv_gen =self.generate_random_n_bit_list(64)
+                    # create a counter
+                    counter = Counter(64)
+                    for i in range(len(checked_string_list)):
+                        new_counter = []
+                        if i == 0:
+                            new_counter.append(iv_gen.extend(counter.counter))
+                        else:
+                            new_counter.append(iv_gen.extend(counter.increment()))
+                        # divide the chunks
+                        new_char_list = aes_func.divide_chunks(new_counter,8)
+                        # creates the first cipher block
+                        first_char = ""
+                        for j in range(len(new_char_list)):
+                            first_char += aes_func.binary_list_to_char(new_char_list[j])
+                        # run through encryption
+                        ctr_encrypt = self.aes_encryption(first_char, key, key_length1)
+                        # create the bit list
+                        ctr_encrypt_list = func.words_to_bits(ctr_encrypt)
+                        # join to create 64 bits
+                        ctr_encrypt_bit_list = list(itertools.chain.from_iterable(ctr_encrypt_list))
+                        # create the plain block list
+                        ctr_plain_list = func.words_to_bits(checked_string_list[i])
+                        # join to create 64 bits
+                        ctr_plain_bloc_list = list(itertools.chain.from_iterable(ctr_plain_list))
+                        # xor as given in logic
+                        xor_applied_element = aes_func.xor_lists(ctr_encrypt_bit_list,ctr_plain_bloc_list)
+                        new_char_list = aes_func.divide_chunks(xor_applied_element,8)
+                        # creates the xor block
+                        first_block = ""
+                        for j in range(len(new_char_list)):
+                            first_block += aes_func.binary_list_to_char(new_char_list[j])
+                        # add it to the cipher list
+                        cipher_list.append(first_block)
 
-            else:
-                print("Invalid Input \n")
-                x = input("Enter only either these choices (1,2,3): ")
-                print("\n")
-        return 
+                    # combine blocks together
+                    cipher = ''.join(cipher_list)
+                    return cipher  
+                else:
+                    print("Invalid Input \n")
+                    x = input("Enter only either these choices (1,2,3): ")
+                    print("\n")
 #----------------------X-------------------------------------- 3DES
 
     def three_des(self):
